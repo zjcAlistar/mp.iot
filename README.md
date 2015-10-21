@@ -17,4 +17,4 @@
 
 ###Bong手环数据获取
 
-相关API将公布在Data_Bong分支
+相关API将公布在Data分支
