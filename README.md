@@ -14,3 +14,7 @@
 
 1.	点击菜单/定时触发，调用API发送HTTP请求(此时得到微信服务器是否发送成功的response)
 2.	服务器url收到携带XML结构体的HTTP请求，并返回XML结构体
+
+###Bong手环数据获取
+
+相关API将公布在Data_Bong分支
