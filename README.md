@@ -49,7 +49,16 @@ Eclipse
 
 ####transMsg
 
-函数原型: public static String transMsg(String deviceType, String deviceID, String openID, String content)
+函数功能：
+
+向设备发送信息
+
+使用：
+
+	import com.bluelight.demo.api.DeviceApi
+	DeviceApi.tranMsg(....)
+
+函数类型: public static String transMsg(String deviceType, String deviceID, String openID, String content)
 
 参数说明:
 
@@ -81,3 +90,214 @@ Example:
 	final String content = Base64.encodeBase64String(respRaw);
 	// 推送消息给设备
 	DeviceApi.transMsg(deviceType, deviceID, openID, content);
+
+#### createQrcode
+
+函数功能：
+
+生成deviceIds对应的二维码ticket
+
+使用：
+
+	import com.bluelight.demo.api.DeviceApi
+	DeviceApi.createQrcode(..)
+
+函数类型：public static String createQrcode(List<String> deviceIds);
+
+参数说明：
+
+deviceIds:需要生成二维码的设备的deviceId(可一次生成多个设备的二维码)
+
+返回值：
+
+一个如下的字符串，其中ticket为有效性息：
+
+	{
+	    "errcode":0,
+	    "errmsg":"succ",
+	    "device_num":1,
+	    "code_list":[{"device_id":"id1","ticket":"t1"}]
+	}
+
+#### createQrImage
+
+函数功能：
+
+利用createQrcode生成的ticket生成相应的二维码图片
+
+使用说明：
+
+	import com.bluelight.tools.Tools
+
+函数类型：private static void createQrImage(String path, String deviceId, String ticket)
+
+参数说明：
+
+path:生成的二维码的存放路径
+
+ticket:二维码字符串，由createQrcode生成
+
+#### createQrByDeviceId
+
+函数功能：
+
+联合createQrcode,createQrImage,直接由deviceId生成相应的二维码图片
+
+使用：
+
+	import com.bluelight.tools.Tools
+    Tools.createQrByDeviceId(..)
+
+函数类型：public static void createQrByDeviceId(String deviceId)
+
+#### getStat
+
+函数功能：
+
+查询设备状态
+
+使用说明：
+
+	import com.bluelight.demo.api.DeviceApi
+	DeviceApi.getStat(..)
+
+函数类型：public static String getStat(String deviceId);
+
+返回结果：
+
+一个JSON字符串，例如:
+
+	{"errcode":0,"errmsg":"ok","status":1,"status_info":"authorized"}
+#### getOpenId
+
+函数功能：
+
+查询设备绑定的用户的OpenId
+
+使用说明：
+
+	import com.bluelight.demo.api.DeviceApi
+	DeviceApi.getOpenId(..)
+
+函数类型：public static String getOpenId(String deviceType, String deviceId);
+
+返回结果：
+
+一个JSON字符串，例如：
+
+	{
+	"open_id":["omN7ljrpaxQgK4NW4H5cRzFRtfa8","omN7ljtqrTZuvYLkjPEX_t_Pmmlg",],
+	"resp_msg":{"ret_code":0,"error_info":"get open id list OK!"}
+	}
+
+#### customSendText
+
+函数功能：
+
+给用户发送客服文本信息
+
+使用说明：
+
+	import com.bluelight.demo.api.MpApi
+	MpApi.customSendText(..)
+
+函数类型：public static void customSendText(String touser, String content)
+
+参数说明：
+
+touser：目标用户的openId,可通过boundInfo获得
+
+#### menuCreate
+
+函数功能:
+
+创建自定义菜单
+
+使用说明：
+
+	import com.bluelight.demo.api.MpApi
+    MpApi.menuCreate(..)
+
+函数类型:public static String menuCreate(String body);
+
+参数说明：
+
+body:JSON字符串，格式如下： 详细格式要求可查看微信官方文档
+
+	{
+	 "button":[
+	 {	
+	      "type":"click",
+	      "name":"今日歌曲",
+	      "key":"V1001_TODAY_MUSIC"
+	  },
+	  {
+	       "name":"菜单",
+	       "sub_button":[
+	       {	
+	           "type":"view",
+	           "name":"搜索",
+	           "url":"http://www.soso.com/"
+	        },
+	        {
+	           "type":"view",
+	           "name":"视频",
+	           "url":"http://v.qq.com/"
+	        },
+	        {
+	           "type":"click",
+	           "name":"赞一下我们",
+	           "key":"V1001_GOOD"
+	        }]
+	   }]
+	}
+
+注：创建自定义菜单时会自动删除原有菜单
+
+#### menuQuery()
+
+函数功能：
+
+查看自定义菜单
+
+使用说明：
+
+	import com.bluelight.demo.api.MpApi
+	MpApi.menuQuery()
+
+函数原型：public static String menuQuery();
+
+返回值：
+
+一个JSON字符串，例子如下：
+
+    {"menu":
+		{"button":[
+			{"type":"click","name":"今日歌曲","key":"V1001_TODAY_MUSIC","sub_button":[]},
+			{"type":"click","name":"歌手简介","key":"V1001_TODAY_SINGER","sub_button":[]},
+			{"name":"菜单","sub_button":[
+				{"type":"view","name":"搜索","url":"http://www.soso.com/","sub_button":[]},
+				{"type":"view","name":"视频","url":"http://v.qq.com/","sub_button":[]},
+				{"type":"click","name":"赞一下我们","key":"V1001_GOOD","sub_button":[]}
+			]}
+		]}
+	}
+
+#### menuDelete
+
+函数功能：
+
+删除原有自定义菜单
+
+使用说明：
+
+	import com.bluelight.demo.api.MpApi
+	MpApi.menuDelete();
+
+函数类型：public static String menuDelete();
+
+返回值：
+
+一个JSON字符串，表示操作结果，如下：
+
+	{"errcode":0,"errmsg":"ok"}
