@@ -1,14 +1,9 @@
-##NodeJS
+#Python
 ---
 
-###Wechat 主动调用API
+##微信公众平台第三方Python SDK
+Github地址：https://github.com/jxtech/wechatpy
 
-https://github.com/node-webot/wechat-api
+文档地址：http://wechatpy.readthedocs.org/zh_CN/latest/
 
-###Wechat 自动回复中间件
-
-https://github.com/node-webot/wechat
-
-###Wechat 硬件对接API
-
-Please wait ...Or you can push your version.
+##手环相关API
