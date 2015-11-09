@@ -1,6 +1,11 @@
 #Python
 ---
 
+##v1.0更新说明
+1. 添加了对消息、推送事件的处理
+2. 添加了模拟服务号token的操作
+3. 添加了一个django版的DEMO
+
 ##微信公众平台第三方Python SDK
 Github地址：https://github.com/jxtech/wechatpy
 
@@ -12,9 +17,17 @@ pycrypto >= 2.6.1 :$pip install pycrypto>=2.6.1
 
 wechatpy :$pip install wechatpy
 
+##DEMO使用说明
+
+1. 请补充如下信息：
+	1. APP_ID,APP_SECRET,TOKEN(wrist/wechat/tools.py)
+	2. 数据库信息(wrist/wrist/settings.py)
+2. wrist/wechat/server.py下为各消息、推送事件的处理，默认版本为回复一个文本"Hello World！I am **." 大家请自行修改为自己的处理
+3. wrist/wechat/tools.py下为主动调用的API，详细信息见“手环相关API”
+
 ##手环相关API
 
-注：请先在开头出填写API_ID,API_SECRET。使用方法即import tools
+注：请先在开头出填写APP_ID,APP_SECRET。使用方法即import tools
 
 ####transMsg
 
