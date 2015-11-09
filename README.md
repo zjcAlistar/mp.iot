@@ -1,6 +1,10 @@
 #Python
 ---
 
+##v1.1更新说明
+1. 修复了硬件相关API无法使用的BUG
+2. 生成二维码需要PIL,qrcode模块
+
 ##v1.0更新说明
 1. 添加了对消息、推送事件的处理
 2. 添加了模拟服务号token的操作
@@ -16,6 +20,10 @@ Github地址：https://github.com/jxtech/wechatpy
 pycrypto >= 2.6.1 :$pip install pycrypto>=2.6.1
 
 wechatpy :$pip install wechatpy
+
+PIL:pip install PIL(非必需，仅在生成二维码处用到)
+
+qrcode:pip install qrcode(非必需，仅在生成二维码处用到)
 
 ##DEMO使用说明
 

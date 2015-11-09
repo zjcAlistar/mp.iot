@@ -7,12 +7,18 @@ __author__ = "chendaxixi"
 
 import hashlib
 import httplib
+import requests
+import base64
+import json
+import qrcode
+from wechatpy.utils import to_text, to_binary
 from wechatpy.client import WeChatClient
 
 APP_ID = ""
 APP_SECRET = ""
 TOKEN = ""
 client = WeChatClient(APP_ID, APP_SECRET)
+API_BASE_URL = 'https://api.weixin.qq.com/device/'
 
 def checkSignature(request):
     try:
@@ -20,7 +26,7 @@ def checkSignature(request):
         timestamp = request.GET["timestamp"]
         nonce = request.GET["nonce"]
     except:
-        return False
+	return False
 
     token = TOKEN
     tmp = [timestamp, nonce, token]
@@ -57,24 +63,32 @@ def customSendImage(user, filename):
     except:
         return res
 
+def deviceAPI(url, data):
+    res = requests.request(method="post", url="%s%s?access_token=%s" % (API_BASE_URL, url, getToken()), 
+       data=data)
+    res.encoding = 'utf-8'
+    try:
+        res = res.json()
+    except:
+        res = res
+    return res    
+
 def getStat(deviceId):
-    _client = WeChatClient(APP_ID, APP_SECRET, getToken())
-    return _client.device.get_stat(deviceId)
+    return deviceAPI("get_stat", {"device_id":deviceId})
 
 def getOpenId(deviceType, deviceId):
-    _client = WeChatClient(APP_ID, APP_SECRET, getToken())
-    return _client.device.get_user_id(deviceType, deviceId)
+    return deviceAPI("get_openid", {"device_type":deviceType,"device_id":deviceId})
    
 def transMsg(deviceType, deviceId, user, content):
-    _client = WeChatClient(APP_ID, APP_SECRET, getToken())
-    return _client.device.send_message(deviceType, deviceId, user, content)
+    content = to_text(base64.b64encode(to_binary(content)))
+    return deviceAPI("transmsg", {"device_type":deviceType,"device_id":deviceId,"openid":user,"content":content})
 
-def createQrByDeviceId(deviceId):
-    _client = WeChatClient(APP_ID, APP_SECRET, getToken())
-    res = _client.device.create_qrcode([deviceId])
+def createQrByDeviceId(deviceId, filename):
+    res = deviceAPI("create_qrcode", json.dumps({"device_num": 1, "device_id_list":[deviceId]}))
     try:
-        ticket = json.loads(res)["code_list"][0]["ticket"]
-        #TODO
+        ticket = res["code_list"][0]["ticket"]
+        img = qrcode.make(ticket)
+        img.save(filename)
         return ticket
     except:
         return res
