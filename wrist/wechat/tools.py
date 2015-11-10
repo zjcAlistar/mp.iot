@@ -14,11 +14,13 @@ import qrcode
 from wechatpy.utils import to_text, to_binary
 from wechatpy.client import WeChatClient
 
-APP_ID = ""
-APP_SECRET = ""
-TOKEN = ""
+APP_ID = "wx87b3855d89436d96"
+APP_SECRET = "4d68e68b7f53bc0c78752605b0dab364"
+TOKEN = "chendaxixi"
 client = WeChatClient(APP_ID, APP_SECRET)
-API_BASE_URL = 'https://api.weixin.qq.com/device/'
+DEVICE_BASE_URL = 'https://api.weixin.qq.com/device/'
+MEDIA_BASE_URL = "https://api.weixin.qq.com/cgi-bin/media/"
+tmp_media_id = None
 
 def checkSignature(request):
     try:
@@ -50,41 +52,56 @@ def menuQuery():
 def menuDelete():
     return client.menu.delete()
 
+def POST(url, foot, data, params, files=None):
+    tmp = "access_token=%s" % params["access_token"]
+    for item in params:
+        if not item == "access_token":
+            tmp += "&%s=%s" % (item, params[item]) 
+    res = requests.request(method="post", url="%s%s?%s" % (url, foot, tmp), 
+       data=data, files=files)
+    res.encoding = 'utf-8'
+    return res.json()    
+
+def uploadMedia(type, filename):
+    res = POST(MEDIA_BASE_URL, "upload", {"media": file(filename)}, {"access_token": client.fetch_access_token()["access_token"], "type": type}, {filename:(filename,open(filename,'rb'))})   
+    return res
+
 def customSendText(user, content):
     return client.message.send_text(user, content)
 
-def customSendImage(user, filename):
-    f = open(filename)
-    res =  client.media.upload("image", f)
-    f.close()
-    data = json.loads(res)
+def customSendImage(user, filename, mediaId=None):
+    if mediaId:
+        return client.message.send_image(user, mediaId)
+    res =  updateMedia("image", filename)
     try:
-        return client.message.send_image(user, data["media_id"])
+        return client.message.send_image(user, res["media_id"])
     except:
         return res
 
-def deviceAPI(url, data):
-    res = requests.request(method="post", url="%s%s?access_token=%s" % (API_BASE_URL, url, getToken()), 
-       data=data)
-    res.encoding = 'utf-8'
-    try:
-        res = res.json()
-    except:
-        res = res
-    return res    
+def customSendVoice(user, mediaId):
+    return client.message.send_voice(user, mediaId)
+
+def customSendVideo(user, mediaId, title=None, description=None):
+    return client.message.send_video(user, mediaId, title, description)
+
+def customSendArticle(user, title, description, image, url):
+    return client.message.send_articles(user, [{"title":title,"description":description,"image":image,"url":url}])
+
+def customSendArticles(user, articles):
+    return client.message.send_articles(user, articles)
 
 def getStat(deviceId):
-    return deviceAPI("get_stat", {"device_id":deviceId})
+    return POST(DEVICE_BASE_URL, "get_stat", {"device_id":deviceId}, {"access_token": getToken()})
 
 def getOpenId(deviceType, deviceId):
-    return deviceAPI("get_openid", {"device_type":deviceType,"device_id":deviceId})
+    return POST(DEVICE_BASE_URL, "get_openid", {"device_type":deviceType,"device_id":deviceId}, {"access_token": getToken()})
    
 def transMsg(deviceType, deviceId, user, content):
     content = to_text(base64.b64encode(to_binary(content)))
-    return deviceAPI("transmsg", {"device_type":deviceType,"device_id":deviceId,"openid":user,"content":content})
+    return POST(DEVICE_BASE_URL, "transmsg", {"device_type":deviceType,"device_id":deviceId,"openid":user,"content":content}, {"access_token": getToken()})
 
 def createQrByDeviceId(deviceId, filename):
-    res = deviceAPI("create_qrcode", json.dumps({"device_num": 1, "device_id_list":[deviceId]}))
+    res = POST(DEVICE_BASE_URL, "create_qrcode", json.dumps({"device_num": 1, "device_id_list":[deviceId]}), {"access_token": getToken()})
     try:
         ticket = res["code_list"][0]["ticket"]
         img = qrcode.make(ticket)

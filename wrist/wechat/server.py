@@ -23,7 +23,20 @@ def handle(request):
 
 #对文本信息进行回复
 def textHandle(msg):
-    return HttpResponse(create_reply("Hello World!I am text", message=msg))
+    tools.customSendText(msg.source, u"我是主动发送的信息")
+    if tools.tmp_media_id:
+        tools.customSendImage(msg.source, None, tools.tmp_media_id)
+    else:
+        tools.tmp_media_id = tools.uploadMedia("image", "test.jpg")["media_id"]  
+        tools.customSendImage(msg.source, None, tools.tmp_media_id)
+    #tools.customSendImage(msg.source, "test.jpg")
+    tools.customSendArticle(msg.source, u"我是单条的文章", u"圣光会制裁你的!", "http://image.baidu.com/search/down?tn=download&ipn=dwnl&word=download&ie=utf8&fr=result&url=http%3A%2F%2Fimg1.91.com%2Fuploads%2Fallimg%2F141208%2F723-14120P95G23Q.jpg", "http://www.hearthstone.com.cn/landing")
+    articles = []
+    articles.append({"title":u"我是多条文章_0", "description":u"过来好好打一架，胆小鬼!", "image":"http://image.baidu.com/search/down?tn=download&ipn=dwnl&word=download&ie=utf8&fr=result&url=http%3A%2F%2Fdynamic-image.yesky.com%2F300x-%2FuploadImages%2F2014%2F014%2F9N1OO1139Y57_big_500.png", "url":"http://www.hearthstone.com.cn/landing"})
+    articles.append({"title":u"我是多条文章_1", "description":u"信仰圣光吧！", "image":"http://image.baidu.com/search/down?tn=download&ipn=dwnl&word=download&ie=utf8&fr=result&url=http%3A%2F%2Fdb.hs.tuwan.com%2Fcard%2Fpremium%2FEX1_383.png", "url":"http://www.hearthstone.com.cn/landing"}) 
+    articles.append({"title":u"我是多条文章_2", "description":u"你～需要我的帮助么", "image":"http://image.baidu.com/search/down?tn=download&ipn=dwnl&word=download&ie=utf8&fr=result&url=http%3A%2F%2Fimg.douxie.com%2Fupload%2Fupload%2F2014%2F02%2F12%2Ftb_52fadff8ed62f.jpg", "url":"http://www.hearthstone.com.cn/landing"}) 
+    tools.customSendArticles(msg.source, articles)
+    return HttpResponse(create_reply("Hello World!I am text\nyour openid is:%s" % msg.source, message=msg))
 
 #对语音信息进行回复
 def voiceHandle(msg):
